@@ -7,9 +7,24 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     protected $guarded = [];
-        protected $casts = ['paid_at' => 'datetime'];
 
-        public function user() { return $this->belongsTo(User::class); }
-        public function items() { return $this->hasMany(OrderItem::class); }
-        public function licenses() { return $this->hasManyThrough(License::class, OrderItem::class); }
+    protected $casts = [
+        'paid_at' => 'datetime',
+        'total_cents' => 'integer',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function licenses()
+    {
+        return $this->hasManyThrough(License::class, OrderItem::class);
+    }
 }

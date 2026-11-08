@@ -8,8 +8,19 @@ class Product extends Model
 {
     protected $guarded = [];
 
-        public function price(): string
-        {
-            return number_format($this->price_cents / 100, 2);
-        }
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+            'growth' => 'float',
+            'drawdown' => 'float',
+            'rating' => 'float',
+            'features' => 'array',
+        ];
+    }
+
+    public function categories()
+    {
+        return $this->belongsToMany(Category::class);
+    }
 }
