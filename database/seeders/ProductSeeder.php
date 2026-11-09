@@ -63,7 +63,9 @@ class ProductSeeder extends Seeder
                     'reviews' => $reviews,
                     'hue' => $hue,
                     'features' => $features,
-                    'file_path' => null,
+                    // TEST: 'gold-titan-mt5' points at the stub file for local checkout testing.
+                    // All other products have no file and cannot be purchased until a real file is added.
+                    'file_path' => ($slug === 'gold-titan-mt5') ? 'ea-files/ready.ex5' : null,
                     'is_active' => true,
                 ]
             );
