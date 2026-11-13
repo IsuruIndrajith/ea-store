@@ -6,8 +6,12 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\LicenseDownloadController;
 use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\ProductSyncController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
+
+// Internal sync endpoint (EA Hub → EA Store)
+Route::middleware('internal.api')->post('/internal/products/sync', ProductSyncController::class);
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);

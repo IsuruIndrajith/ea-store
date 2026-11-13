@@ -11,11 +11,13 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'is_active' => 'boolean',
-            'growth' => 'float',
-            'drawdown' => 'float',
-            'rating' => 'float',
-            'features' => 'array',
+            'is_active'       => 'boolean',
+            'growth'          => 'float',
+            'drawdown'        => 'float',
+            'rating'          => 'float',
+            'features'        => 'array',
+            'extended'        => 'array',
+            'set_review_data' => 'array',
         ];
     }
 
