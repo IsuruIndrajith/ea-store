@@ -7,7 +7,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::table('products')->whereIn('slug', [
+        $slugs = [
             'gold-titan-mt5',
             'night-owl-scalper',
             'aurum-ai-mt5',
@@ -16,7 +16,16 @@ return new class extends Migration
             'falcon-breakout',
             'golden-hedge-source',
             'volatility-lens',
-        ])->delete();
+        ];
+
+        $ids = DB::table('products')->whereIn('slug', $slugs)->pluck('id');
+
+        // Remove child rows that block the delete
+        if ($ids->isNotEmpty()) {
+            DB::table('order_items')->whereIn('product_id', $ids)->delete();
+        }
+
+        DB::table('products')->whereIn('slug', $slugs)->delete();
     }
 
     public function down(): void
