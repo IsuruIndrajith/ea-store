@@ -65,9 +65,9 @@ The Laravel application provides the API used by `ea-store-frontend/forex-ea-dis
 3. Configure `STRIPE_SECRET` and `STRIPE_WEBHOOK_SECRET` in `.env`. Never expose these secrets in the frontend.
 4. Run `php artisan migrate --seed`.
 5. Add each real EA file to `storage/app/private/ea-files/` and set that product's `file_path` to its path relative to the private storage root. Seed products have no downloadable files and cannot be purchased until this is configured.
-6. In the frontend project, copy `.env.example` to `.env`, set `VITE_API_URL=http://localhost:8000`, and restart Vite.
+6. In the frontend project, copy `.env.example` to `.env`, set `VITE_API_URL=http://localhost:9000`, and restart Vite.
 
-For local Stripe testing, run `stripe listen --forward-to localhost:8000/api/stripe/webhook` and copy the displayed signing secret to `STRIPE_WEBHOOK_SECRET`. Subscribe the endpoint to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, and `checkout.session.expired`.
+For local Stripe testing, run `stripe listen --forward-to localhost:9000/api/stripe/webhook` and copy the displayed signing secret to `STRIPE_WEBHOOK_SECRET`. Subscribe the endpoint to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, and `checkout.session.expired`.
 
 ### Business flow
 
