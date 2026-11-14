@@ -34,6 +34,7 @@ class ProductSyncController extends Controller
             'vendor_url'        => ['nullable', 'string', 'max:500'],
             'myfxbook_link'     => ['nullable', 'string', 'max:500'],
             'is_active'         => ['boolean'],
+            'thumbnail_url'     => ['nullable', 'string', 'max:500'],
             'extended'          => ['nullable', 'array'],
             'set_review_data'   => ['nullable', 'array'],
         ]);
@@ -58,6 +59,7 @@ class ProductSyncController extends Controller
                 'vendor_url'        => $data['vendor_url'] ?? null,
                 'myfxbook_link'     => $data['myfxbook_link'] ?? null,
                 'is_active'         => $data['is_active'] ?? true,
+                'thumbnail_url'     => $data['thumbnail_url'] ?? null,
                 'extended'          => $data['extended'] ?? null,
                 'set_review_data'   => $data['set_review_data'] ?? null,
             ]
