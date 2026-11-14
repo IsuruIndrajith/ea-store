@@ -25,4 +25,9 @@ class Product extends Model
     {
         return $this->belongsToMany(Category::class);
     }
+
+    public function setReview()
+    {
+        return $this->hasOne(SetReview::class, 'product_slug', 'slug');
+    }
 }

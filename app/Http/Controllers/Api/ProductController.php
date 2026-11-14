@@ -15,7 +15,7 @@ class ProductController extends Controller
         return ProductResource::collection(
             Product::query()
                 ->where('is_active', true)
-                ->with('categories')
+                ->with(['categories', 'setReview'])
                 ->orderBy('id')
                 ->get()
         );
@@ -28,7 +28,7 @@ class ProductController extends Controller
         $product = Product::query()
             ->when(! $preview, fn ($q) => $q->where('is_active', true))
             ->where('slug', $slug)
-            ->with('categories')
+            ->with(['categories', 'setReview'])
             ->firstOrFail();
 
         return new ProductResource($product);

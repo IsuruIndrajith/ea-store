@@ -7,14 +7,21 @@ use App\Http\Controllers\Api\CheckoutController;
 use App\Http\Controllers\Api\LicenseDownloadController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\ProductSyncController;
+use App\Http\Controllers\Api\SetReviewController;
+use App\Http\Controllers\Api\SetReviewSyncController;
 use App\Http\Controllers\Api\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
-// Internal sync endpoint (EA Hub → EA Store)
-Route::middleware('internal.api')->post('/internal/products/sync', ProductSyncController::class);
+// Internal sync endpoints (EA Hub → EA Store)
+Route::middleware('internal.api')->group(function () {
+    Route::post('/internal/products/sync', ProductSyncController::class);
+    Route::post('/internal/set-reviews/sync', SetReviewSyncController::class);
+});
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
+Route::get('/set-reviews', [SetReviewController::class, 'index']);
+Route::get('/set-reviews/{slug}', [SetReviewController::class, 'show']);
 Route::get('/categories', [CategoryController::class, 'index']);
 
 Route::post('/auth/register', [AuthController::class, 'register'])->middleware('throttle:5,1');

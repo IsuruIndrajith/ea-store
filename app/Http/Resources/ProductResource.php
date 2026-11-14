@@ -36,7 +36,23 @@ class ProductResource extends JsonResource
             'vendor_url'       => $this->vendor_url,
             'myfxbook_link'    => $this->myfxbook_link,
             'extended'         => $this->extended,
-            'set_review_data'  => $this->set_review_data,
+            // set_review_data: prefer the dedicated set_reviews table, fall back to legacy column
+            'set_review_data'  => $this->whenLoaded('setReview', function () {
+                $sr = $this->setReview;
+                if (! $sr) {
+                    return $this->set_review_data;
+                }
+                // Merge the top-level SEO fields into the content array so the
+                // existing SetReviewTab component receives one flat object.
+                $content = $sr->content ?? [];
+                $content['recommended_slug'] = $sr->slug;
+                $content['suggested_h1']     = $sr->h1;
+                $content['focus_keyword']    = $sr->focus_keyword;
+                $content['meta_description'] = $sr->meta_description;
+
+                return $content;
+            }, fn () => $this->set_review_data),
+            'set_review_slug'  => $this->whenLoaded('setReview', fn () => $this->setReview?->is_published ? $this->setReview->slug : null),
             'is_purchasable'   => $this->is_active
                 && $this->price_cents > 0
                 && $this->sale_price_cents > 0
