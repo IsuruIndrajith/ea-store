@@ -4,7 +4,6 @@ namespace App\Filament\Resources\ProductResource\Pages;
 
 use App\Filament\Resources\ProductResource;
 use Filament\Resources\Pages\EditRecord;
-use Illuminate\Support\Facades\Storage;
 
 class EditProduct extends EditRecord
 {
@@ -21,6 +20,11 @@ class EditProduct extends EditRecord
     {
         $ext = $data['extended'] ?? [];
         $sr  = $data['set_review_data'] ?? [];
+
+        // Short Description tab — prefer top-level column, fall back to extended
+        $data['short_description'] = $data['short_description']
+            ?? $ext['short_description']
+            ?? '';
 
         // Description tab
         $data['description_md'] = $ext['description_md'] ?? '';
@@ -60,10 +64,14 @@ class EditProduct extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $slug = $this->record->slug;
+        // ── Short Description ─────────────────────────────────────────────────
+        // Write to both the top-level column and extended, so the API always finds it.
+        $ext = $this->record->extended ?? [];
+        $ext['short_description'] = $data['short_description'] ?? null;
+        $data['extended'] = $ext;
+        // top-level column is handled by Filament automatically (it's a real column)
 
         // ── Description ──────────────────────────────────────────────────────
-        $ext = $this->record->extended ?? [];
         $ext['description_md'] = $data['description_md'] ?? $ext['description_md'] ?? null;
         $data['extended'] = $ext;
 
@@ -101,7 +109,7 @@ class EditProduct extends EditRecord
         if (isset($data['sr_final_verdict']))           $sr['final_verdict']          = $data['sr_final_verdict'];
         $data['set_review_data'] = $sr ?: null;
 
-        // Remove virtual fields — not real columns
+        // Remove virtual fields — not real columns (short_description IS a real column, keep it)
         unset($data['description_md'], $data['thumbnail_file'], $data['gallery_images'],
               $data['sr_seo_introduction'], $data['sr_customization_guidance'], $data['sr_final_verdict']);
 

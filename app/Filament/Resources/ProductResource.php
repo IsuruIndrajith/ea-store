@@ -9,6 +9,7 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs;
+use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -28,6 +29,16 @@ class ProductResource extends Resource
     {
         return $form->schema([
             Tabs::make('Content')->tabs([
+
+                Tabs\Tab::make('Short Description')
+                    ->icon('heroicon-o-bars-3-bottom-left')
+                    ->schema([
+                        Textarea::make('short_description')
+                            ->label('Short Description')
+                            ->helperText('Appears on the product page below the "View on vendor site" link. Keep it to 2–4 sentences.')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                    ]),
 
                 Tabs\Tab::make('Description')
                     ->icon('heroicon-o-document-text')
