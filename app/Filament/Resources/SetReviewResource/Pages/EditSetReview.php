@@ -20,13 +20,24 @@ class EditSetReview extends EditRecord
     {
         $ct = $data['content'] ?? [];
 
-        $data['seo_introduction']          = is_string($ct['seo_introduction'] ?? null)          ? $ct['seo_introduction']          : '';
-        $data['customization_guidance']    = is_string($ct['customization_guidance'] ?? null)    ? $ct['customization_guidance']    : '';
-        $data['customization_cautions']    = is_string($ct['customization_cautions'] ?? null)    ? $ct['customization_cautions']    : '';
-        $data['config_strengths_limitations'] = is_string($ct['config_strengths_limitations'] ?? null) ? $ct['config_strengths_limitations'] : '';
-        $data['who_should_use']            = is_string($ct['who_should_use'] ?? null)            ? $ct['who_should_use']            : '';
-        $data['final_verdict']             = is_string($ct['final_verdict'] ?? null)             ? $ct['final_verdict']             : '';
-        $data['risk_disclaimer']           = is_string($ct['risk_disclaimer'] ?? null)           ? $ct['risk_disclaimer']           : '';
+        // Plain string/markdown fields
+        $data['seo_introduction']             = $ct['seo_introduction'] ?? '';
+        $data['customization_guidance']       = $ct['customization_guidance'] ?? '';
+        $data['customization_cautions']       = $ct['customization_cautions'] ?? '';
+        $data['config_strengths_limitations'] = $ct['config_strengths_limitations'] ?? '';
+        $data['final_verdict']                = $ct['final_verdict'] ?? '';
+        $data['risk_disclaimer']              = $ct['risk_disclaimer'] ?? '';
+
+        // who_should_use: AI may send an array of strings — join to one string per line
+        $wsu = $ct['who_should_use'] ?? '';
+        $data['who_should_use'] = is_array($wsu)
+            ? implode("\n", array_filter(array_map('strval', $wsu)))
+            : (string) $wsu;
+
+        // Array repeater fields
+        $data['set_files']      = $ct['set_files']      ?? [];
+        $data['load_set_steps'] = $ct['load_set_steps'] ?? [];
+        $data['faqs']           = $ct['faqs']           ?? [];
 
         // Thumbnail — derive filename from stored URL
         if (! empty($data['thumbnail_url'])) {
@@ -42,14 +53,22 @@ class EditSetReview extends EditRecord
     {
         $ct = $this->record->content ?? [];
 
-        $contentFields = [
+        $stringFields = [
             'seo_introduction', 'customization_guidance', 'customization_cautions',
             'config_strengths_limitations', 'who_should_use', 'final_verdict', 'risk_disclaimer',
         ];
 
-        foreach ($contentFields as $field) {
+        foreach ($stringFields as $field) {
             if (array_key_exists($field, $data)) {
                 $ct[$field] = $data[$field] ?: null;
+                unset($data[$field]);
+            }
+        }
+
+        $arrayFields = ['set_files', 'load_set_steps', 'faqs'];
+        foreach ($arrayFields as $field) {
+            if (array_key_exists($field, $data)) {
+                $ct[$field] = $data[$field] ?: [];
                 unset($data[$field]);
             }
         }
