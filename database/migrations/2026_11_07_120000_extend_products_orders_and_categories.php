@@ -61,14 +61,23 @@ return new class extends Migration
             }
         });
 
-        // MySQL requires the unique index for this foreign key, so remove the
-        // foreign key first, replace the index, then restore the relationship.
-        Schema::table('licenses', function (Blueprint $table) {
-            $table->dropForeign(['order_item_id']);
-        });
-        Schema::table('licenses', function (Blueprint $table) {
-            $table->dropUnique(['order_item_id']);
-        });
+        // Drop the foreign key (name varies by MySQL version — look it up dynamically),
+        // then drop the unique index, then restore the FK without the unique constraint.
+        $fkName = collect(Schema::getForeignKeys('licenses'))
+            ->first(fn ($fk) => in_array('order_item_id', $fk['columns']))['name'] ?? null;
+
+        if ($fkName) {
+            Schema::table('licenses', function (Blueprint $table) use ($fkName) {
+                $table->dropForeign($fkName);
+            });
+        }
+
+        if (collect(Schema::getIndexes('licenses'))->first(fn ($i) => in_array('order_item_id', $i['columns']) && $i['unique'])) {
+            Schema::table('licenses', function (Blueprint $table) {
+                $table->dropUnique(['order_item_id']);
+            });
+        }
+
         Schema::table('licenses', function (Blueprint $table) {
             $table->foreign('order_item_id')
                 ->references('id')
@@ -79,9 +88,15 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('licenses', function (Blueprint $table) {
-            $table->dropForeign(['order_item_id']);
-        });
+        $fkName = collect(Schema::getForeignKeys('licenses'))
+            ->first(fn ($fk) => in_array('order_item_id', $fk['columns']))['name'] ?? null;
+
+        if ($fkName) {
+            Schema::table('licenses', function (Blueprint $table) use ($fkName) {
+                $table->dropForeign($fkName);
+            });
+        }
+
         Schema::table('licenses', function (Blueprint $table) {
             $table->unique('order_item_id');
         });
