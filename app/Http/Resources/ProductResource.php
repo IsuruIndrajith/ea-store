@@ -10,8 +10,27 @@ class ProductResource extends JsonResource
 {
     private static function absUrl(?string $url): ?string
     {
-        if (! $url || str_starts_with($url, 'http')) return $url;
-        return rtrim(config('app.url'), '/') . '/' . ltrim($url, '/');
+        if (! $url) return null;
+        $apiBase = rtrim(config('app.url'), '/');
+        // Strip any wrong absolute origin so the correct API base is always used
+        if (str_starts_with($url, 'http')) {
+            $url = preg_replace('#^https?://[^/]+#', '', $url) ?? $url;
+        }
+        return $apiBase . '/' . ltrim($url, '/');
+    }
+
+    private static function fixExtendedImages(?array $extended): ?array
+    {
+        if (! $extended) return $extended;
+        if (isset($extended['images']) && is_array($extended['images'])) {
+            $extended['images'] = array_map(function ($img) {
+                if (isset($img['url'])) {
+                    $img['url'] = self::absUrl($img['url']);
+                }
+                return $img;
+            }, $extended['images']);
+        }
+        return $extended;
     }
 
     public function toArray(Request $request): array
@@ -41,7 +60,7 @@ class ProductResource extends JsonResource
             'features'         => $this->features ?? [],
             'vendor_url'       => $this->vendor_url,
             'myfxbook_link'    => $this->myfxbook_link,
-            'extended'         => $this->extended,
+            'extended'         => self::fixExtendedImages($this->extended),
             // set_review_data: prefer the dedicated set_reviews table, fall back to legacy column
             'set_review_data'  => $this->whenLoaded('setReview', function () {
                 $sr = $this->setReview;
