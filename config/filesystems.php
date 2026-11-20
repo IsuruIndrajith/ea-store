@@ -47,12 +47,10 @@ return [
             'report' => false,
         ],
 
-        // Images served directly from public/images/eas/ — URL is root-relative
-        // so embedded markdown paths like /images/eas/{slug}/content/file.png work on any domain.
         'ea_images' => [
             'driver' => 'local',
             'root' => public_path('images/eas'),
-            'url' => '/images/eas',
+            'url' => rtrim(env('APP_URL', 'http://localhost'), '/') . '/images/eas',
             'visibility' => 'public',
             'throw' => false,
         ],

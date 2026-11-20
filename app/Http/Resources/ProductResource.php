@@ -8,13 +8,19 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductResource extends JsonResource
 {
+    private static function absUrl(?string $url): ?string
+    {
+        if (! $url || str_starts_with($url, 'http')) return $url;
+        return rtrim(config('app.url'), '/') . '/' . ltrim($url, '/');
+    }
+
     public function toArray(Request $request): array
     {
         return [
             'id'               => $this->id,
             'slug'             => $this->slug,
             'name'             => $this->name,
-            'thumbnail_url'    => $this->thumbnail_url,
+            'thumbnail_url'    => self::absUrl($this->thumbnail_url),
             'version'          => $this->version,
             'platform'         => $this->platform,
             'market'           => $this->market,

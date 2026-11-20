@@ -7,6 +7,12 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SetReviewResource extends JsonResource
 {
+    private static function absUrl(?string $url): ?string
+    {
+        if (! $url || str_starts_with($url, 'http')) return $url;
+        return rtrim(config('app.url'), '/') . '/' . ltrim($url, '/');
+    }
+
     public function toArray(Request $request): array
     {
         return [
@@ -17,7 +23,7 @@ class SetReviewResource extends JsonResource
             'meta_title'       => $this->meta_title,
             'meta_description' => $this->meta_description,
             'focus_keyword'    => $this->focus_keyword,
-            'thumbnail_url'    => $this->thumbnail_url,
+            'thumbnail_url'    => self::absUrl($this->thumbnail_url),
             'is_published'     => $this->is_published,
             'content'          => $this->content,
         ];
